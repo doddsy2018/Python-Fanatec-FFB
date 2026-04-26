@@ -26,7 +26,7 @@ poetry shell
 Alternatively, install dependencies directly:
 
 ```bash
-pip install pygame hidapi numpy keyboard
+pip install pygame hidapi numpy keyboard carla
 ```
 
 ## Files
@@ -55,6 +55,12 @@ Both libraries expose the same public API:
 | [2_fanatec_drive_wheel_pid.py](2_fanatec_drive_wheel_pid.py) | PID angle hold — use `+`/`-` keys to move the wheel to a target angle |
 | [3_fanatec_drive_with_MPC.py](3_fanatec_drive_with_MPC.py) | Same as above but uses the MPC controller (900° range) |
 | [4_fanatect_effect.py](4_fanatect_effect.py) | Raw effect playback demo — cornering load (constant force) then a kerb-hit (sine) |
+
+### CARLA Integration
+
+| Script | What it does |
+|--------|-------------|
+| [carla_manual_control_fanatec_wheel.py](carla_manual_control_fanatec_wheel.py) | Drive a CARLA vehicle with the Fanatec wheel — steering, throttle, and brake mapped from raw axis inputs with MPC-based FFB |
 
 ## Usage
 
@@ -89,6 +95,70 @@ python 4_fanatect_effect.py
 ```
 
 Plays a 2-second cornering load (constant force at level 14000), waits, then plays a 500 ms kerb-hit (sine at 20000 magnitude, 60 ms period). No user interaction required — runs and exits.
+
+### 5. CARLA manual control with Fanatec wheel
+
+**Prerequisites:** A running CARLA server (default `localhost:2000`) and the `carla` Python package installed.
+
+```bash
+python carla_manual_control_fanatec_wheel.py
+```
+
+Optional arguments:
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--host H` | `127.0.0.1` | CARLA server IP |
+| `-p PORT` | `2000` | CARLA server TCP port |
+| `-a` | off | Start with autopilot enabled |
+| `--res WxH` | `1280x720` | Display resolution |
+| `--filter PATTERN` | `vehicle.*` | Actor blueprint filter |
+| `-v` | off | Verbose debug logging |
+
+The script spawns a random vehicle matching the filter, attaches collision, lane-invasion, GNSS, and camera sensors, and hands control to the `DualControl` class which reads both keyboard and wheel inputs each frame.
+
+**Wheel axis mapping (joystick index 1):**
+
+| Axis | Input | Transform |
+|------|-------|-----------|
+| A0 | Steering | `steer = tan(1.1 × A0)` |
+| A1 | Throttle pedal | log-curve mapped to [0, 1] |
+| A4 | Brake pedal | log-curve mapped to [0, 1] |
+
+FFB is applied via `lib_fanatec_controller_with_mpc` using the `snap` preset on startup.
+
+**Wheel button mapping:**
+
+| Button | Action |
+|--------|--------|
+| 0 | Respawn vehicle |
+| 1 | Toggle HUD info overlay |
+| 2 | Toggle camera position |
+| 3 | Cycle weather preset |
+| 23 | Cycle sensor type |
+
+**Keyboard controls:**
+
+| Key | Action |
+|-----|--------|
+| `W` / `↑` | Throttle |
+| `S` / `↓` | Brake |
+| `A` / `←` | Steer left |
+| `D` / `→` | Steer right |
+| `Space` | Hand brake |
+| `Q` | Toggle reverse |
+| `M` | Toggle manual gear shift |
+| `,` / `.` | Shift down / up (manual mode) |
+| `P` | Toggle autopilot |
+| `C` / `Shift+C` | Cycle weather forward / backward |
+| `Tab` | Toggle camera position |
+| `` ` `` | Cycle sensor |
+| `1`–`9` | Select sensor by index |
+| `R` | Toggle frame recording |
+| `F1` | Toggle HUD info |
+| `H` / `?` | Toggle help overlay |
+| `Backspace` | Respawn vehicle |
+| `Escape` / `Ctrl+Q` | Quit |
 
 ## Configuration
 
