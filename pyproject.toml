@@ -3,7 +3,7 @@ name = "fanatec-python-driver"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "doddsy2018",email = "iain_dodds@hotmail.com"}
+    {name = "doddsy2018",email = "email@email.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.12"
