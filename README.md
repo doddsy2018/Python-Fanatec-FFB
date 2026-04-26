@@ -56,14 +56,6 @@ Both libraries expose the same public API:
 | [3_fanatec_drive_with_MPC.py](3_fanatec_drive_with_MPC.py) | Same as above but uses the MPC controller (900° range) |
 | [4_fanatect_effect.py](4_fanatect_effect.py) | Raw effect playback demo — cornering load (constant force) then a kerb-hit (sine) |
 
-### Subdirectories
-
-| Directory | Contents |
-|-----------|----------|
-| [fanatec_dev/](fanatec_dev/) | Earlier prototype scripts used during library development |
-| [moza_dev/](moza_dev/) | Experimental scripts for Moza wheel bases (HID sniffing, angle decoding) |
-| [moza_beta/](moza_beta/) | Beta PID angle controller adapted for Moza hardware |
-
 ## Usage
 
 ### 1. Monitor inputs with FFB active
